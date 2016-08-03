@@ -38,6 +38,7 @@ public class SVGParser {
     private let initialPosition: Transform
 
     private var nodes = [Node]()
+    private var defs = [String : Node]()
 
     private enum PathCommandType {
         case MoveTo
@@ -82,9 +83,22 @@ public class SVGParser {
                 return parseElement(node, groupStyle: groupStyle, groupPosition: groupPosition)
             } else if element.name == "g" {
                 return parseGroup(node, groupStyle: groupStyle, groupPosition: groupPosition)
+            } else if element.name == "defs" {
+                parseDefinitions(node)
             }
         }
         return .None
+    }
+    
+    private func parseDefinitions(defs: XMLIndexer) {
+        for child in defs.children {
+            guard let id = child.element?.attributes["id"] else {
+                continue
+            }
+            if let node = parseNode(child) {
+                self.defs[id] = node
+            }
+        }
     }
 
     private func parseElement(node: XMLIndexer, groupStyle: [String: String] = [:], groupPosition: Transform = Transform()) -> Node? {
@@ -126,6 +140,8 @@ public class SVGParser {
                 return parseText(node, fill: getFillColor(styleAttributes), fontName: getFontName(styleAttributes), fontSize: getFontSize(styleAttributes),
                                  italic: getFontStyle(styleAttributes, style: "italic"), bold: getFontWeight(styleAttributes, style: "bold"),
                                  underline: getTextDecoration(styleAttributes, decoration: "underline"), strike: getTextDecoration(styleAttributes, decoration: "line-through"), pos: position)
+            case "use":
+                return parseUse(node, fill: getFillColor(styleAttributes), stroke: getStroke(styleAttributes), groupPosition: groupPosition)
             default:
                 print("SVG parsing error. Shape \(element.name) not supported")
                 return .None
@@ -426,6 +442,38 @@ public class SVGParser {
             size: fontSize ?? 12)
         let position = pos.move(dx: getDoubleValue(element, attribute: "x") ?? 0, dy: getDoubleValue(element, attribute: "y") ?? 0)
         return Text(text: string, font: font, fill: fill ?? Color.black, place: position)
+    }
+    
+    private func parseUse(use: XMLIndexer, fill: Fill?, stroke: Stroke?, groupPosition: Transform = Transform()) -> Node? {
+        guard let element = use.element, link = element.attributes["xlink:href"] else {
+            return .None
+        }
+        var id = link
+        if id.hasPrefix("#") {
+            id = id.stringByReplacingOccurrencesOfString("#", withString: "")
+        }
+        guard let referenceNode = self.defs[id], node = copyNode(referenceNode) else {
+            return .None
+        }
+        var position = concat(groupPosition, t2: node.pos)
+        position = getPosition(position, element: element).move(getDoubleValue(element, attribute: "x") ?? 0, my: getDoubleValue(element, attribute: "y") ?? 0)
+        node.pos = position
+        if let shape = node as? Shape {
+            if let color = fill {
+                shape.fill = color
+            }
+            if let line = stroke {
+                shape.stroke = line
+            }
+            return shape
+        }
+        if let text = node as? Text {
+            if let color = fill {
+                text.fill = color
+            }
+            return text
+        }
+        return node
     }
 
     private func parsePath(path: XMLIndexer) -> Path? {
@@ -735,5 +783,34 @@ public class SVGParser {
         let nm22 = t2.m21 * t1.m12 + t2.m22 * t1.m22
         let ndy = t2.dx * t1.m12 + t2.dy * t1.m22 + t1.dy
         return Transform(m11: nm11, m12: nm12, m21: nm21, m22: nm22, dx: ndx, dy: ndy)
+    }
+    
+    private func copyNode(referenceNode: Node) -> Node? {
+        
+        let pos = referenceNode.pos
+        let opaque = referenceNode.opaque
+        let visible = referenceNode.visible
+        let clip = referenceNode.clip
+        let tag = referenceNode.tag
+        
+        if let shape = referenceNode as? Shape {
+            return Shape(form: shape.form, fill: shape.fill, stroke: shape.stroke, pos: pos, opaque: opaque, visible: visible, clip: clip, tag: tag)
+        }
+        if let text = referenceNode as? Text {
+            return Text(text: text.text, font: text.font, fill: text.fill, align: text.align, baseline: text.baseline, pos: pos, opaque: opaque, visible: visible, clip: clip, tag: tag)
+        }
+        if let image = referenceNode as? Image {
+            return Image(src: image.src, xAlign: image.xAlign, yAlign: image.yAlign, aspectRatio: image.aspectRatio, w: image.w, h: image.h, pos: pos, opaque: opaque, visible: visible, clip: clip, tag: tag)
+        }
+        if let group = referenceNode as? Group {
+            var contents = [Node]()
+            group.contentsVar.forEach { node in
+                if let copy = copyNode(node) {
+                    contents.append(copy)
+                }
+            }
+            return Group(contents: contents, pos: pos, opaque: opaque, visible: visible, clip: clip, tag: tag)
+        }
+        return .None
     }
 }
