@@ -61,7 +61,7 @@ public class SVGParser {
         let parsedXml = SWXMLHash.parse(xmlString)
         iterateThroughXmlTree(parsedXml.children)
 
-        let group = Group(contents: self.nodes)
+        let group = Group(contents: self.nodes, place: initialPosition)
         return group
     }
 
@@ -70,19 +70,19 @@ public class SVGParser {
             if let element = child.element {
                 if element.name == "svg" {
                     iterateThroughXmlTree(child.children)
-                } else if let node = parseNode(child, groupPosition: self.initialPosition) {
+                } else if let node = parseNode(child) {
                     self.nodes.append(node)
                 }
             }
         }
     }
 
-    private func parseNode(node: XMLIndexer, groupStyle: [String: String] = [:], groupPosition: Transform = Transform()) -> Node? {
+    private func parseNode(node: XMLIndexer, groupStyle: [String: String] = [:]) -> Node? {
         if let element = node.element {
             if node.children.isEmpty {
-                return parseElement(node, groupStyle: groupStyle, groupPosition: groupPosition)
+                return parseElement(node, groupStyle: groupStyle)
             } else if element.name == "g" {
-                return parseGroup(node, groupStyle: groupStyle, groupPosition: groupPosition)
+                return parseGroup(node, groupStyle: groupStyle)
             } else if element.name == "defs" {
                 parseDefinitions(node)
             }
@@ -101,10 +101,10 @@ public class SVGParser {
         }
     }
 
-    private func parseElement(node: XMLIndexer, groupStyle: [String: String] = [:], groupPosition: Transform = Transform()) -> Node? {
+    private func parseElement(node: XMLIndexer, groupStyle: [String: String] = [:]) -> Node? {
         if let element = node.element {
             let styleAttributes = getStyleAttributes(groupStyle, element: element)
-            let position = getPosition(groupPosition, element: element)
+            let position = getPosition(element)
             switch element.name {
             case "path":
                 if let path = parsePath(node) {
@@ -141,7 +141,7 @@ public class SVGParser {
                                  italic: getFontStyle(styleAttributes, style: "italic"), bold: getFontWeight(styleAttributes, style: "bold"),
                                  underline: getTextDecoration(styleAttributes, decoration: "underline"), strike: getTextDecoration(styleAttributes, decoration: "line-through"), pos: position)
             case "use":
-                return parseUse(node, fill: getFillColor(styleAttributes), stroke: getStroke(styleAttributes), groupPosition: groupPosition)
+                return parseUse(node, fill: getFillColor(styleAttributes), stroke: getStroke(styleAttributes), pos: position)
             default:
                 print("SVG parsing error. Shape \(element.name) not supported")
                 return .None
@@ -150,29 +150,29 @@ public class SVGParser {
         return .None
     }
 
-    private func parseGroup(group: XMLIndexer, groupStyle: [String: String] = [:], groupPosition: Transform = Transform()) -> Group? {
+    private func parseGroup(group: XMLIndexer, groupStyle: [String: String] = [:]) -> Group? {
         guard let element = group.element else {
             return .None
         }
         var groupNodes: [Node] = []
         let style = getStyleAttributes(groupStyle, element: element)
-        let position = getPosition(groupPosition, element: element)
+        let position = getPosition(element)
         group.children.forEach { child in
-            if let node = parseNode(child, groupStyle: style, groupPosition: position) {
+            if let node = parseNode(child, groupStyle: style) {
                 groupNodes.append(node)
             }
         }
-        return Group(contents: groupNodes)
+        return Group(contents: groupNodes, place: position)
     }
     
-    private func getPosition(groupPosition: Transform = Transform(), element: XMLElement) -> Transform {
+    private func getPosition(element: XMLElement) -> Transform {
         guard let transformAttribute = element.attributes["transform"] else {
-            return groupPosition
+            return Transform()
         }
-        return parseTransformationAttribute(transformAttribute, transform: groupPosition)
+        return parseTransformationAttribute(transformAttribute)
     }
     
-    private func parseTransformationAttribute(attributes: String, transform: Transform) -> Transform {
+    private func parseTransformationAttribute(attributes: String, transform: Transform = Transform()) -> Transform {
         do {
             var finalTransform = transform
             let transformPattern = "([a-z]+)\\(((\\d+\\.?\\d*\\s*,?\\s*)+)\\)"
@@ -444,7 +444,7 @@ public class SVGParser {
         return Text(text: string, font: font, fill: fill ?? Color.black, place: position)
     }
     
-    private func parseUse(use: XMLIndexer, fill: Fill?, stroke: Stroke?, groupPosition: Transform = Transform()) -> Node? {
+    private func parseUse(use: XMLIndexer, fill: Fill?, stroke: Stroke?, pos: Transform) -> Node? {
         guard let element = use.element, link = element.attributes["xlink:href"] else {
             return .None
         }
@@ -455,9 +455,7 @@ public class SVGParser {
         guard let referenceNode = self.defs[id], node = copyNode(referenceNode) else {
             return .None
         }
-        var position = concat(groupPosition, t2: node.pos)
-        position = getPosition(position, element: element).move(getDoubleValue(element, attribute: "x") ?? 0, my: getDoubleValue(element, attribute: "y") ?? 0)
-        node.pos = position
+        node.place = pos.move(dx: getDoubleValue(element, attribute: "x") ?? 0, dy: getDoubleValue(element, attribute: "y") ?? 0)
         if let shape = node as? Shape {
             if let color = fill {
                 shape.fill = color
@@ -787,29 +785,29 @@ public class SVGParser {
     
     private func copyNode(referenceNode: Node) -> Node? {
         
-        let pos = referenceNode.pos
+        let pos = referenceNode.place
         let opaque = referenceNode.opaque
         let visible = referenceNode.visible
         let clip = referenceNode.clip
         let tag = referenceNode.tag
         
         if let shape = referenceNode as? Shape {
-            return Shape(form: shape.form, fill: shape.fill, stroke: shape.stroke, pos: pos, opaque: opaque, visible: visible, clip: clip, tag: tag)
+            return Shape(form: shape.form, fill: shape.fill, stroke: shape.stroke, place: pos, opaque: opaque, visible: visible, clip: clip, tag: tag)
         }
         if let text = referenceNode as? Text {
-            return Text(text: text.text, font: text.font, fill: text.fill, align: text.align, baseline: text.baseline, pos: pos, opaque: opaque, visible: visible, clip: clip, tag: tag)
+            return Text(text: text.text, font: text.font, fill: text.fill, align: text.align, baseline: text.baseline, place: pos, opaque: opaque, visible: visible, clip: clip, tag: tag)
         }
         if let image = referenceNode as? Image {
-            return Image(src: image.src, xAlign: image.xAlign, yAlign: image.yAlign, aspectRatio: image.aspectRatio, w: image.w, h: image.h, pos: pos, opaque: opaque, visible: visible, clip: clip, tag: tag)
+            return Image(src: image.src, xAlign: image.xAlign, yAlign: image.yAlign, aspectRatio: image.aspectRatio, w: image.w, h: image.h, place: pos, opaque: opaque, visible: visible, clip: clip, tag: tag)
         }
         if let group = referenceNode as? Group {
             var contents = [Node]()
-            group.contentsVar.forEach { node in
+            group.contents.forEach { node in
                 if let copy = copyNode(node) {
                     contents.append(copy)
                 }
             }
-            return Group(contents: contents, pos: pos, opaque: opaque, visible: visible, clip: clip, tag: tag)
+            return Group(contents: contents, place: pos, opaque: opaque, visible: visible, clip: clip, tag: tag)
         }
         return .None
     }
