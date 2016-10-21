@@ -256,7 +256,7 @@ class AnimationProducer {
         for (index, animationDesc) in contentsAnimations.enumerated() {
             
             let animation = animationDesc.animation
-            guard let node = animation.node else {
+            guard let group = animation.node as? Group else {
                 continue
             }
             
@@ -264,11 +264,11 @@ class AnimationProducer {
             if progress >= 1.0 {
                 animation.completion?()
                 contentsAnimations.remove(at: index)
-                animationDesc.cache.freeLayer(node)
+                animationDesc.cache.freeLayer(group)
                 continue
             }
             
-            animation.getVFunc()(progress)
+           group.contents = animation.getVFunc()(progress)
             animationDesc.layer.setNeedsDisplay()
             animation.onProgressUpdate?(progress)
         }

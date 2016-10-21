@@ -126,14 +126,16 @@ class PathExampleView: MacawView {
         let group = PathExampleView.newScene()
 		super.init(node: group , coder: aDecoder)
         
-        let contentsAnim = group.contentsVar.animation({ t, nodes in
-                nodes.forEach { node in
-                    guard let shape = node as? Shape else {
-                        return
-                    }
-                    
-                    shape.fill = Color.rgb(r: Int(255.0 * t), g: Int(255.0 * (1.0 - t)), b: Int(255.0 * t))
-                }
+        let contentsAnim = group.contentsVar.animation({ t in
+//                nodes.forEach { node in
+//                    guard let shape = node as? Shape else {
+//                        return
+//                    }
+//                    
+//                    shape.fill = Color.rgb(r: Int(255.0 * t), g: Int(255.0 * (1.0 - t)), b: Int(255.0 * t))
+//                }
+            let fillColor = Color.rgb(r: Int(255.0 * t), g: Int(255.0 * (1.0 - t)), b: Int(255.0 * t))
+            return [Shape(form: Rect(x: -50, y: -50, w: 100, h: 100), fill: fillColor)]
             }, during: 5.0)
         contentsAnim.play()
 
