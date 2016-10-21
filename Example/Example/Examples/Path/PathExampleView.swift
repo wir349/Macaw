@@ -135,7 +135,11 @@ class PathExampleView: MacawView {
 //                    shape.fill = Color.rgb(r: Int(255.0 * t), g: Int(255.0 * (1.0 - t)), b: Int(255.0 * t))
 //                }
             let fillColor = Color.rgb(r: Int(255.0 * t), g: Int(255.0 * (1.0 - t)), b: Int(255.0 * t))
-            return [Shape(form: Rect(x: -50, y: -50, w: 100, h: 100), fill: fillColor)]
+            let shape = Shape(form: Arc(ellipse: Ellipse(cx: 0.0, cy: 0.0, rx: 50.0, ry: 50.0), shift: 0.0, extent: M_PI * 2.0  * t),
+                              fill: fillColor)
+//            let shape = Shape(form: Rect(x: -50, y: -50, w: 100, h: 100), fill: fillColor)
+            
+            return [shape]
             }, during: 5.0)
         contentsAnim.play()
 
@@ -160,6 +164,8 @@ class PathExampleView: MacawView {
 	}
 
 	fileprivate static func newScene() -> Group {
+//        let shape = Shape(form: Arc(ellipse: Ellipse(cx: 0.0, cy: 0.0, rx: 50.0, ry: 50.0), shift: 0.0, extent: 0.0),
+//                          fill: Color.blue)// Shape(form: Rect(x: -50, y: -50, w: 100, h: 100), fill: Color.blue)
 		let shape = Shape(form: Rect(x: -50, y: -50, w: 100, h: 100), fill: Color.blue)
 		let t1 = Transform.identity
 		let t2 = GeomUtils.centerRotation(node: shape, place: Transform.identity, angle: M_PI_4) // Transform.rotate(angle: M_PI_4)

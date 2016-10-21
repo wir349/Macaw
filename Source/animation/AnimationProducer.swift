@@ -270,6 +270,7 @@ class AnimationProducer {
             
            group.contents = animation.getVFunc()(progress)
             animationDesc.layer.setNeedsDisplay()
+            animationDesc.layer.displayIfNeeded()
             animation.onProgressUpdate?(progress)
         }
     }
