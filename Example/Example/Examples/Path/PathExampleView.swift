@@ -2,6 +2,12 @@
 import UIKit
 import Macaw
 
+let n = 1000
+let max_r = 50
+var centers = [Point]()
+var radiuses = [Double]()
+var colors = [Double]()
+
 class PathExampleView: MacawView {
 
 	var animation: Animation?
@@ -9,6 +15,8 @@ class PathExampleView: MacawView {
 	let initialTransform: Transform
 
 	var onScaleUpdate: ((Double) -> ())?
+    
+
 
 	required init?(coder aDecoder: NSCoder) {
 
@@ -125,23 +133,24 @@ class PathExampleView: MacawView {
 
         let group = PathExampleView.newScene()
 		super.init(node: group , coder: aDecoder)
+    
         
         let contentsAnim = group.contentsVar.animation({ t in
-//                nodes.forEach { node in
-//                    guard let shape = node as? Shape else {
-//                        return
-//                    }
-//                    
-//                    shape.fill = Color.rgb(r: Int(255.0 * t), g: Int(255.0 * (1.0 - t)), b: Int(255.0 * t))
-//                }
-            let fillColor = Color.rgb(r: Int(255.0 * t), g: Int(255.0 * (1.0 - t)), b: Int(255.0 * t))
-            let shape = Shape(form: Arc(ellipse: Ellipse(cx: 0.0, cy: 0.0, rx: 50.0, ry: 50.0), shift: 0.0, extent: M_PI * 2.0  * t),
-                              fill: fillColor)
-//            let shape = Shape(form: Rect(x: -50, y: -50, w: 100, h: 100), fill: fillColor)
+
+            var shapes = [Shape]()
+            for i in 0...n {
+                let fillColor = Color.rgb(r: Int(255.0 * t * colors[i]), g: Int(255.0 * (1.0 - t)), b: Int(255.0 * t * ( 1.0 - colors[i])))
+                let shape = Shape(form: Arc(ellipse: Ellipse(cx: centers[i].x, cy: centers[i].y, rx: radiuses[i], ry: radiuses[i]), shift: 0.0, extent: M_PI * 2.0  * t),
+                                  fill: fillColor)
+                
+             shapes.append(shape)
+            }
             
-            return [shape]
+            return shapes
             }, during: 5.0)
+            
         contentsAnim.play()
+        
 
 		let _ = sceneGroup.placeVar.asObservable().subscribeNext { transform in
 			let a = transform.m11
@@ -164,9 +173,19 @@ class PathExampleView: MacawView {
 	}
 
 	fileprivate static func newScene() -> Group {
-//        let shape = Shape(form: Arc(ellipse: Ellipse(cx: 0.0, cy: 0.0, rx: 50.0, ry: 50.0), shift: 0.0, extent: 0.0),
-//                          fill: Color.blue)// Shape(form: Rect(x: -50, y: -50, w: 100, h: 100), fill: Color.blue)
-		let shape = Shape(form: Rect(x: -50, y: -50, w: 100, h: 100), fill: Color.blue)
+        
+        for _ in 0...n {
+            centers.append(Point(
+                x: 200.0 + (-200.0 +  Double(arc4random() % 400)),
+                y: 200.0 + (-200.0 +  Double(arc4random() % 400))))
+            radiuses.append(Double(arc4random() % 50))
+            colors.append(Double(arc4random() % 10) / 10)
+        }
+        
+        
+        /*
+
+        let shape = Shape(form: Rect(x: -50, y: -50, w: 100, h: 100), fill: Color.blue)
 		let t1 = Transform.identity
 		let t2 = GeomUtils.centerRotation(node: shape, place: Transform.identity, angle: M_PI_4) // Transform.rotate(angle: M_PI_4)
 		_ = shape.onTap.subscribeNext { tap in
@@ -174,7 +193,21 @@ class PathExampleView: MacawView {
 		}
         
         // shape.clip =  RoundRect(rect: Rect(x: 0.0, y: 0.0, w: 10, h: 10))
-		return [shape].group(place:.move(dx: 200, dy: 200))
+		return [shape].group()//place:.move(dx: 200, dy: 200))
+ 
+ */
+        var shapes = [Shape]()
+        for i in 0...n {
+            let r = radiuses[i]
+            let cx = centers[i].x
+            let cy = centers[i].y
+            let shape = Shape(form: Rect(x: cx - r / 2.0, y: cy - r / 2.0, w: r * 2.0, h: r * 2.0), fill: Color.blue)
+            
+            
+            shapes.append(shape)
+        }
+        
+        return shapes.group()
 	}
     
 //    fileprivate static func contentsScene() -> Node {
