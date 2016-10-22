@@ -94,7 +94,7 @@
 		38A998431D91888700AC4545 /* ShapeLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38A997EC1D91888700AC4545 /* ShapeLayer.swift */; };
 		572A64601D9EB3B400C2CA9B /* ObservableArray.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572A645F1D9EB3B400C2CA9B /* ObservableArray.swift */; };
 		57653CA51DBA674200F6B64D /* ContentsAnimation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57653CA41DBA674200F6B64D /* ContentsAnimation.swift */; };
-		57653CA71DBA675B00F6B64D /* GroupInterpolation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57653CA61DBA675B00F6B64D /* GroupInterpolation.swift */; };
+		57653CA91DBAF82B00F6B64D /* GroupInterpolation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57653CA81DBAF82B00F6B64D /* GroupInterpolation.swift */; };
 		57CAB1191D78173F00FD8E47 /* RxSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57CAB1181D78173F00FD8E47 /* RxSwift.framework */; };
 		57CAB11A1D78175800FD8E47 /* RxSwift.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 57CAB1181D78173F00FD8E47 /* RxSwift.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		57CAB11C1D78177900FD8E47 /* SWXMLHash.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57CAB11B1D78177900FD8E47 /* SWXMLHash.framework */; };
@@ -226,7 +226,7 @@
 		38A997EC1D91888700AC4545 /* ShapeLayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShapeLayer.swift; sourceTree = "<group>"; };
 		572A645F1D9EB3B400C2CA9B /* ObservableArray.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ObservableArray.swift; sourceTree = "<group>"; };
 		57653CA41DBA674200F6B64D /* ContentsAnimation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContentsAnimation.swift; sourceTree = "<group>"; };
-		57653CA61DBA675B00F6B64D /* GroupInterpolation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupInterpolation.swift; sourceTree = "<group>"; };
+		57653CA81DBAF82B00F6B64D /* GroupInterpolation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupInterpolation.swift; sourceTree = "<group>"; };
 		57CAB1181D78173F00FD8E47 /* RxSwift.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = RxSwift.framework; sourceTree = "<group>"; };
 		57CAB11B1D78177900FD8E47 /* SWXMLHash.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SWXMLHash.framework; path = iOS/SWXMLHash.framework; sourceTree = "<group>"; };
 		57CAB1221D782DFC00FD8E47 /* TestUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestUtils.swift; sourceTree = "<group>"; };
@@ -312,7 +312,7 @@
 		38A9978F1D91888700AC4545 /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
-				57653CA61DBA675B00F6B64D /* GroupInterpolation.swift */,
+				57653CA81DBAF82B00F6B64D /* GroupInterpolation.swift */,
 				38A997901D91888700AC4545 /* AnimOperators.swift */,
 				38A997911D91888700AC4545 /* DoubleInterpolation.swift */,
 				38A997921D91888700AC4545 /* Interpolable.swift */,
@@ -720,7 +720,7 @@
 				38A998231D91888700AC4545 /* Line.swift in Sources */,
 				38A997F21D91888700AC4545 /* Easing.swift in Sources */,
 				38A9982C1D91888700AC4545 /* Polyline.swift in Sources */,
-				57653CA71DBA675B00F6B64D /* GroupInterpolation.swift in Sources */,
+				57653CA91DBAF82B00F6B64D /* GroupInterpolation.swift in Sources */,
 				38A998251D91888700AC4545 /* MoveTo.swift in Sources */,
 				38A9981F1D91888700AC4545 /* Circle.swift in Sources */,
 				38A997ED1D91888700AC4545 /* AnimatableVariable.swift in Sources */,
@@ -852,6 +852,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
@@ -896,6 +897,7 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 				VERSIONING_SYSTEM = "apple-generic";

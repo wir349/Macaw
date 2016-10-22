@@ -8,8 +8,8 @@
 
 Pod::Spec.new do |s|
   s.name             = "Macaw"
-  s.version          = "0.1.0"
-  s.summary          = "Swift UI Library"
+  s.version          = "0.7.0"
+  s.summary          = "Powerful and easy-to-use vector graphics library with SVG support written in Swift."
 
 # This description is used to generate tags and improve search results.
 #   * Think: What does it do? Why did you write it? What is the focus?
@@ -19,12 +19,12 @@ Pod::Spec.new do |s|
 #  s.description      = <<-DESC
 #                       DESC
 
-  s.homepage         = 'https://github.com/exyte/Macaw'
+  s.homepage         = 'https://github.com/exyte/Macaw.git'
   # s.screenshots     = "www.example.com/screenshots_1", "www.example.com/screenshots_2"
   s.license          = 'MIT'
   s.author           = { 'Igor Zapletnev' => 'igor.zapletnev@gmail.com' }
   s.source           = { :git => 'https://github.com/exyte/Macaw.git', :tag => s.version.to_s }
-  # s.social_media_url = 'https://twitter.com/<TWITTER_USERNAME>'
+  s.social_media_url = 'http://exyte.com'
 
   s.platform     = :ios, '8.0'
   s.requires_arc = true

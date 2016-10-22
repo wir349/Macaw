@@ -1,7 +1,8 @@
 # Macaw
 
-[![CI Status](http://img.shields.io/travis/Igor Zapletnev/Macaw.svg?style=flat)](https://travis-ci.org/Igor Zapletnev/Macaw)
+[![CI Status](https://travis-ci.org/exyte/Macaw.svg?style=flat)](https://travis-ci.org/exyte/Macaw)
 [![Version](https://img.shields.io/cocoapods/v/Macaw.svg?style=flat)](http://cocoapods.org/pods/Macaw)
+[![Carthage Compatible](https://img.shields.io/badge/Carthage-compatible-0473B3.svg?style=flat)](https://github.com/Carthage/Carthage)
 [![License](https://img.shields.io/cocoapods/l/Macaw.svg?style=flat)](http://cocoapods.org/pods/Macaw)
 [![Platform](https://img.shields.io/cocoapods/p/Macaw.svg?style=flat)](http://cocoapods.org/pods/Macaw)
 
@@ -50,7 +51,9 @@ Affine transformations, user events, animation and various effects to build beau
 
 <img src="https://www.dropbox.com/s/b6lspzzqa80ielk/periodic-ipad.gif?dl=1" width="600">
 
-Take a look at [getting started guide](https://github.com/exyte/Macaw/wiki/Getting-started) to learn more.
+## Documentation
+
+We're working hard to provide full documentation. Currently you can take a look at the [getting started guide](https://github.com/exyte/Macaw/wiki/Getting-started).
 
 ## Requirements
 
@@ -59,11 +62,17 @@ Take a look at [getting started guide](https://github.com/exyte/Macaw/wiki/Getti
 
 ## Installation
 
-Macaw is available through [CocoaPods](http://cocoapods.org).
-To install it, simply add the following line to your Podfile:
+## [CocoaPods](http://cocoapods.org)
 
+To install it, simply add the following line to your Podfile:
 ```ruby
-pod "Macaw"
+pod "Macaw", "0.7.0"
+```
+
+## [Carthage](http://github.com/Carthage/Carthage)
+
+```ogdl
+github "Exyte/Macaw" ~> 0.7.0
 ```
 
 ## Building from sources
