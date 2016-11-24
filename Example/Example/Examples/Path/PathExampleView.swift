@@ -135,7 +135,7 @@ class PathExampleView: MacawView {
 		super.init(node: group , coder: aDecoder)
     
         
-        group.contentsVar.animate({ t in
+        let contentsAnim = group.contentsVar.animation({ t in
 
             var shapes = [Shape]()
             for i in 0...n {
@@ -149,6 +149,8 @@ class PathExampleView: MacawView {
             return shapes
             }, during: 5.0)
             
+        contentsAnim.play()
+        
 
 		let _ = sceneGroup.placeVar.asObservable().subscribe { event in
             guard let transform  = event.element else {
