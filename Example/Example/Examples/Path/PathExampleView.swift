@@ -2,7 +2,7 @@
 import UIKit
 import Macaw
 
-let n = 1000
+let n = 10
 let max_r = 50
 var centers = [Point]()
 var radiuses = [Double]()
@@ -147,7 +147,7 @@ class PathExampleView: MacawView {
             return shapes
             }, during: 10.0)
         
-        contentsAnim.autoreversed().play()
+        contentsAnim.play()
         
         super.init(node: group , coder: aDecoder)
 
