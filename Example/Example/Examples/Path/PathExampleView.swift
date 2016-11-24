@@ -132,9 +132,7 @@ class PathExampleView: MacawView {
 		// animation = sceneGroup.placeVar.animation((initialTransform >> rotation).t(10.0))
 
         let group = PathExampleView.newScene()
-		super.init(node: group , coder: aDecoder)
-    
-        
+		
         let contentsAnim = group.contentsVar.animation({ t in
 
             var shapes = [Shape]()
@@ -147,10 +145,11 @@ class PathExampleView: MacawView {
             }
             
             return shapes
-            }, during: 5.0)
-            
-        contentsAnim.play()
+            }, during: 10.0)
         
+        contentsAnim.autoreversed().play()
+        
+        super.init(node: group , coder: aDecoder)
 
 		let _ = sceneGroup.placeVar.asObservable().subscribe { event in
             guard let transform  = event.element else {
