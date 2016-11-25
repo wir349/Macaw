@@ -298,7 +298,8 @@ class AnimationProducer {
                 continue
             }
             
-           group.contents = animation.getVFunc()(progress)
+           let t = progressForTimingFunction(animation.easing, progress: progress)
+           group.contents = animation.getVFunc()(t)
             animationDesc.layer.setNeedsDisplay()
             animationDesc.layer.displayIfNeeded()
             animation.onProgressUpdate?(progress)
