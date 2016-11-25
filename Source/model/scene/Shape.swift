@@ -66,6 +66,8 @@ open class Shape: Node {
             
 		} else if let rect = form as? Rect {
 			bounds = rect
+        } else if let roundRect = form as? RoundRect {
+            bounds = roundRect.rect
 		} else {
 			bounds = form.bounds()
 		}
