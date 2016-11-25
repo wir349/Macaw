@@ -14,6 +14,7 @@ class AnimationProducer {
         let cache: AnimationCache
         let startDate: Date
         let finishDate: Date
+        let completion: (()->())?
     }
     
     var contentsAnimations = [ContentAnimationDesc]()
@@ -68,7 +69,11 @@ class AnimationProducer {
 		case .combine:
 			addCombineAnimation(animation)
         case .contents:
-            addContentsAnimation(animation, cache: cache)
+            addContentsAnimation(animation, cache: cache, completion: {
+                if let next = animation.next {
+                    self.addAnimation(next)
+                }
+            })
 		case .empty:
 			executeCompletion(animation)
 		}
@@ -217,12 +222,29 @@ class AnimationProducer {
     
     // MARK: - Contents animation
     
-    func addContentsAnimation(_ animation: BasicAnimation, cache: AnimationCache) {
+    func addContentsAnimation(_ animation: BasicAnimation, cache: AnimationCache, completion: @escaping (() -> ())) {
         guard let contentsAnimation = animation as? ContentsAnimation else {
             return
         }
         
         guard let node = contentsAnimation.node else {
+            return
+        }
+        
+        if animation.autoreverses {
+            animation.autoreverses = false
+            addAnimation([animation, animation.reverse()].sequence() as! BasicAnimation)
+            return
+        }
+        
+        if animation.repeatCount > 0.0001 {
+            animation.repeatCount = 0.0
+            var animSequence = [Animation]()
+            for i in 0...Int(animation.repeatCount) {
+                animSequence.append(animation)
+            }
+            
+            addAnimation(animSequence.sequence() as! BasicAnimation)
             return
         }
         
@@ -233,7 +255,9 @@ class AnimationProducer {
             layer: cache.layerForNode(node, animation: contentsAnimation),
             cache: cache,
             startDate: Date(),
-            finishDate: Date(timeInterval: contentsAnimation.duration, since: startDate))
+            finishDate: Date(timeInterval: contentsAnimation.duration, since: startDate),
+            completion: completion
+        )
         
         contentsAnimations.append(animationDesc)
         
@@ -242,8 +266,6 @@ class AnimationProducer {
             displayLink?.frameInterval = 1
             displayLink?.add(to: RunLoop.current, forMode: RunLoopMode.defaultRunLoopMode)
         }
-        
-        
     }
     
     @objc func updateContentAnimations() {
@@ -265,6 +287,8 @@ class AnimationProducer {
                 animation.completion?()
                 contentsAnimations.remove(at: index)
                 animationDesc.cache.freeLayer(group)
+                
+                animationDesc.completion?()
                 continue
             }
             
