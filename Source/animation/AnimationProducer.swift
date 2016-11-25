@@ -250,9 +250,15 @@ class AnimationProducer {
         
         let startDate = Date(timeInterval: contentsAnimation.delay, since: Date())
         
+        var unionBounds: Rect? = .none
+        if let startBounds = contentsAnimation.getVFunc()(0.0).group().bounds(),
+           let endBounds = contentsAnimation.getVFunc()(1.0).group().bounds() {
+            unionBounds = startBounds.union(rect: endBounds)
+        }
+        
         let animationDesc = ContentAnimationDesc(
             animation: contentsAnimation,
-            layer: cache.layerForNode(node, animation: contentsAnimation),
+            layer: cache.layerForNode(node, animation: contentsAnimation, customBounds: unionBounds),
             cache: cache,
             startDate: Date(),
             finishDate: Date(timeInterval: contentsAnimation.duration, since: startDate),
