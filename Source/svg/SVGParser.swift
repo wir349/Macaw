@@ -596,9 +596,7 @@ open class SVGParser {
     }
     
     fileprivate func parseSimpleText(_ text: XMLElement, fill: Fill?, opacity: Double, fontName: String?, fontSize: Int?, pos: Transform = Transform()) -> Text? {
-        guard let string = text.text else {
-            return .none
-        }
+        let string = text.text
         let position = pos.move(dx: getDoubleValue(text, attribute: "x") ?? 0, dy: getDoubleValue(text, attribute: "y") ?? 0)
         return Text(text: string, font: getFont(fontName: fontName, fontSize: fontSize), fill: fill ?? Color.black, place: position, opacity: opacity, tag: getTag(text))
     }
@@ -657,9 +655,10 @@ open class SVGParser {
     fileprivate func parseTspan(_ tspan: XMLIndexer, withWhitespace: Bool = false, fill: Fill?, opacity: Double, fontName: String?,
                                 fontSize: Int?, bounds: Rect) -> Text? {
         
-        guard let element = tspan.element, let string = element.text else {
+        guard let element = tspan.element else {
             return .none
         }
+        let string = element.text
         var shouldAddWhitespace = withWhitespace
         let pos = getTspanPosition(element, bounds: bounds, withWhitespace: &shouldAddWhitespace)
         let text = shouldAddWhitespace ? " \(string)" : string
